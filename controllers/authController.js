@@ -1,25 +1,34 @@
+const jwt = require('jsonwebtoken');
+const bcyrypt = require('bcryptjs');
+const asyncHandler = require('express-async-handler');
+const User = require('../models/authModel') 
+
+
+
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/login
 // *** acces : public ***
-const Login =  (req,res) => {
+const Login = asyncHandler(async (req,res) => {
     try {
         res.status(200).send(req.body)
     } catch (error) {
         res.send(error)
     }
-}
+})
 
 
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/Register
 // *** acces : public ***
-const Register =  (req,res) => {
-    try {
-        res.status(200).send('this a register function')
-    } catch (error) {
-        res.send(error);
-    }  
-}
+const Register =  asyncHandler(async (req,res) => {
+    const {name,email,password,phone,adresse } = req.body
+
+    if(!name || !email || !password || !phone || !adresse ) {
+        res.status(400)
+        throw new Error ('Please add all fields')
+    }
+    res.json({message : 'register'}) 
+})
 
 
 // *** *** *** method :post *** *** ***

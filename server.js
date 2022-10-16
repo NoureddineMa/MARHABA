@@ -16,3 +16,6 @@ app.use(express.urlencoded ({extended: false}))
 app.listen(PORT, () => {
     console.log(`server Started at port ${PORT}`);
 })
+
+// connect base données:
+require('./config/dbConfig').connect();
