@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Role = require('./rolesModel');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -21,7 +22,11 @@ const userSchema = mongoose.Schema({
     adresse: {
         type:String,
         required: [true, 'please add a Adresse']
-    }
+    },
+    role: [{
+        type: String,
+        ref: 'Role',
+       }]
 })
 
 module.exports = mongoose.model('User', userSchema)

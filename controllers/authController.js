@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcyrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
-const User = require('../models/authModel') 
+const User = require('../models/authModel'); 
+const Roles = require('../models/rolesModel')
+
 
 
 
@@ -33,11 +35,11 @@ const Login = asyncHandler(async (req,res) => {
 // @Route :api/auth/Register
 // *** acces : public ***
 const Register =  asyncHandler(async (req,res) => {
-    const {name,email,password,phone,adresse } = req.body
-
-    if(!name  || !email || !password || !phone || !adresse ) {
+    const {name,email,password,phone,adresse,role } = req.body
+    console.log(role);
+    if(!name  || !email || !password || !phone || !adresse || !role  ) {
         res.status(400)
-        throw new Error ('Please add all fields')
+        res.json({message : "Please add all fields"})
     }
 
 
@@ -46,12 +48,20 @@ const Register =  asyncHandler(async (req,res) => {
 
     if(userExists){
         res.status(400)
-        throw new Error('User already Exist')
+        res.json({message : "user already exist"})
     }
 
     // hadsh Password : "Bcryptjs"
     const salt = await bcyrypt.genSalt(10)
     const hashedPassword = await bcyrypt.hash(password, salt)
+
+    // find roles by id:
+    const roleid = await Roles.findOne({role:req.body.role})
+    const nameRole = roleid._id
+    
+
+    // obj = roleid.ObjectId;
+    console.log(nameRole);
 
     // create a user : 
     const user = await User.create ({
@@ -60,6 +70,7 @@ const Register =  asyncHandler(async (req,res) => {
         password: hashedPassword,
         phone,
         adresse,
+        role:nameRole
     })
 
     if(user){
@@ -70,6 +81,7 @@ const Register =  asyncHandler(async (req,res) => {
             email: user.email,
             phone: user.phone,
             adresse: user.adresse,
+            role: nameRole,
             token: generateToken(user._id)
         })
     }else{
@@ -79,9 +91,10 @@ const Register =  asyncHandler(async (req,res) => {
 })
 
 
+
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/getUser
-// *** acces : public ***
+// *** acces : private ***
 const Getme = asyncHandler(async (req,res) => {
     const{_id, name, email} = await User.findById(req.user.id)
 
