@@ -14,20 +14,26 @@ const Login = asyncHandler(async (req,res) => {
      const {email,password} = req.body
      // check for user email :
      const user = await User.findOne({email})
+     if(user){
+     userRole = user.role
+    //  console.log(user.role);
     
+     const findRoleByName = await Roles.findById({_id:userRole})
+     const  nameRole = findRoleByName.role
+    //  console.log(nameRole);
+     
      if(user && (await bcyrypt.compare(password, user.password))){
-        res.json({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            adresse: user.adresse,
-            token: generateToken(user._id)
-        })
+        // create token: 
+        const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET);
+        res.header('auth-token', token).send(`Hello ${user.name} u are ${nameRole}`)
+        // log token : 
+        console.log(token);
+
      } else {
         res.status(400)
         throw new Error('Invalid credentials')
      }
+    }
 })
 
 
@@ -36,7 +42,7 @@ const Login = asyncHandler(async (req,res) => {
 // *** acces : public ***
 const Register =  asyncHandler(async (req,res) => {
     const {name,email,password,phone,adresse,role } = req.body
-    console.log(role);
+   
     if(!name  || !email || !password || !phone || !adresse || !role  ) {
         res.status(400)
         res.json({message : "Please add all fields"})
@@ -58,11 +64,6 @@ const Register =  asyncHandler(async (req,res) => {
     // find roles by id:
     const roleid = await Roles.findOne({role:req.body.role})
     const nameRole = roleid._id
-    
-
-    // obj = roleid.ObjectId;
-    console.log(nameRole);
-
     // create a user : 
     const user = await User.create ({
         name,
@@ -72,21 +73,13 @@ const Register =  asyncHandler(async (req,res) => {
         adresse,
         role:nameRole
     })
-
     if(user){
         res.status(201).json({
-            _id: user.id,
-            name: user.name,
-            password: user.password,
-            email: user.email,
-            phone: user.phone,
-            adresse: user.adresse,
-            role: nameRole,
-            token: generateToken(user._id)
+            message: "created succesufly"
         })
     }else{
         res.status(400)
-        throw new Error('Invalid User Data')
+        res.json({message: "Invalid User Data"})
     }
 })
 
@@ -132,12 +125,7 @@ const ResetPassword =  (req,res) => {
 
 
 
-// generate JWT 
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '3d',
-    })
-}
+
 
 
 module.exports = { Login, Register, ForgetPassword, ResetPassword , Getme }
