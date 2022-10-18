@@ -17,24 +17,22 @@ const Login = asyncHandler(async (req,res) => {
      if(user){
      userRole = user.role
     //  console.log(user.role);
-    
      const findRoleByName = await Roles.findById({_id:userRole})
      const  nameRole = findRoleByName.role
     //  console.log(nameRole);
-     
      if(user && (await bcyrypt.compare(password, user.password))){
         // create token: 
-        const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET);
-        res.header('auth-token', token).send(`Hello ${user.name} u are ${nameRole}`)
-        // log token : 
-        console.log(token);
-
+        const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, {
+                expiresIn: '24h' // expires in 24 hours
+        });
+        res.cookie('token', token, { expire: new Date() + 8062000 })
+        res.send(`Hello ${user.name} u are ${nameRole}`)  
      } else {
         res.status(400)
         throw new Error('Invalid credentials')
      }
     }
-})
+});
 
 
 // *** *** *** method :post *** *** ***
