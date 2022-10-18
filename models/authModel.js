@@ -26,7 +26,11 @@ const userSchema = mongoose.Schema({
     role: [{
         type: String,
         ref: 'Role',
-       }]
+       }],
+    isValidate: {
+        type: Boolean,
+        default: false
+    }   
 })
 
 module.exports = mongoose.model('User', userSchema)

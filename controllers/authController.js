@@ -3,6 +3,7 @@ const bcyrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/authModel'); 
 const Roles = require('../models/rolesModel')
+const nodemailer = require('nodemailer')
 
 
 
@@ -58,7 +59,6 @@ const Register =  asyncHandler(async (req,res) => {
     // hadsh Password : "Bcryptjs"
     const salt = await bcyrypt.genSalt(10)
     const hashedPassword = await bcyrypt.hash(password, salt)
-
     // find roles by id:
     const roleid = await Roles.findOne({role:req.body.role})
     const nameRole = roleid._id
@@ -75,10 +75,39 @@ const Register =  asyncHandler(async (req,res) => {
         res.status(201).json({
             message: "created succesufly"
         })
-    }else{
+            // create MailTransporter:
+    const transporter = nodemailer.createTransport({
+        service: process.env.SMTP,
+        auth: {
+            user: process.env.EMAIL, 
+            pass: process.env.PWD_EMAIL
+        }, 
+        tls: {
+            rejectUnauthorized: false
+        } 
+    })
+    const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, { expiresIn: '1h' }) 
+    // create MailBody
+    const mailContent = {
+        from: "Verify Your Email" + process.env.EMAIL,
+        to: email,
+        subject: 'Verify Your Email ',
+        html: `<h2>Hi Please Verify Your Email <a href="http://localhost:3000/api/auth/register/verify/${token}">here</a></h2>`
+        
+    }
+    // send mail:
+    transporter.sendMail(mailContent, (err) => !err ? console.log('mail just sent to '+user.email) : console.log(err))
+
+    
+
+    }
+    else
+    {
         res.status(400)
         res.json({message: "Invalid User Data"})
     }
+
+
 })
 
 
