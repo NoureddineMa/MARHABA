@@ -136,4 +136,24 @@ const ResetPassword =  (req,res) => {
 }
 
 
-module.exports = { Login, Register, ForgetPassword, ResetPassword , Getme }
+
+// *** *** *** method :post *** *** ***
+// @Route :/register/verify/:token
+// *** acces : private ***
+const emailVerification = (req,res) => {
+    // retrieve token from params
+    const token = req.params.token
+    // verify token:
+    const userData = jwt.verify(token, process.env.JWT_SECRET)
+        // get id
+        const userId = userData._id
+        User.updateOne({_id: userId}, { $set: { isValidate: true } })
+            .then(() => {
+                res.send('email verified succefully') && console.log('email verified succefully')
+            }).catch((err)=> {
+            res.json({message:"something went wrong " + err})
+        })
+    }
+
+
+module.exports = { Login, Register, ForgetPassword, ResetPassword , Getme , emailVerification}

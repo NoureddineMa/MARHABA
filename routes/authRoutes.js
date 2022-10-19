@@ -4,7 +4,7 @@ const User = require('../models/authModel')
 const verify = require('../middlewares/verifyToken')
 const jwt = require('jsonwebtoken')
 
-const { Login , Register , ForgetPassword , ResetPassword  } = require('../controllers/authcontroller')
+const { Login , Register , ForgetPassword , ResetPassword , emailVerification  } = require('../controllers/authcontroller')
 
 
 router.post('/login',Login)
@@ -14,7 +14,6 @@ router.post('/forgetpassword/:token',ForgetPassword)
 router.post('/resetpassword',ResetPassword) 
 
 
-
 router.get('/getme', verify , async (req,res) => {
     const id = req.user._id
     const user = await User.findById({_id: id})
@@ -22,21 +21,8 @@ router.get('/getme', verify , async (req,res) => {
 })
 
 
-
-router.get('/register/verify/:token' , (req,res) => {
-    // retrieve token from params
-    const token = req.params.token
-    // verify token:
-    const userData = jwt.verify(token, process.env.JWT_SECRET)
-    // get id
-    const userId = userData._id
-    User.updateOne({_id: userId}, { $set: { isValidate: true } })
-        .then(() => {
-            res.send('email verified succefully') && console.log('email verified succefully')
-        }).catch((err)=> {
-        res.json({message:"something went wrong " + err})
-    })
-})
+// verify Email:
+router.get('/register/verify/:token' , emailVerification)
 
 
 
