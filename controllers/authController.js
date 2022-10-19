@@ -5,9 +5,6 @@ const User = require('../models/authModel');
 const Roles = require('../models/rolesModel')
 const nodemailer = require('nodemailer')
 
-
-
-
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/login
 // *** acces : public ***
@@ -15,12 +12,13 @@ const Login = asyncHandler(async (req,res) => {
      const {email,password} = req.body
      // check for user email :
      const user = await User.findOne({email})
-     if(user){
+     console.log(user.isValidate);
+     const StatutUser = user.isValidate
+     if(user){ 
+        if(StatutUser == true ){
      userRole = user.role
-    //  console.log(user.role);
      const findRoleByName = await Roles.findById({_id:userRole})
      const  nameRole = findRoleByName.role
-    //  console.log(nameRole);
      if(user && (await bcyrypt.compare(password, user.password))){
         // create token: 
         const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, {
@@ -33,9 +31,12 @@ const Login = asyncHandler(async (req,res) => {
         throw new Error('Invalid credentials')
      }
     }
+    else {
+        res.json({message: 'U need to verify your email to login !! '});
+
+    }
+}
 });
-
-
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/Register
 // *** acces : public ***
@@ -46,16 +47,12 @@ const Register =  asyncHandler(async (req,res) => {
         res.status(400)
         res.json({message : "Please add all fields"})
     }
-
-
     // check UserifExists:
     const userExists = await User.findOne({email})
-
     if(userExists){
         res.status(400)
         res.json({message : "user already exist"})
     }
-
     // hadsh Password : "Bcryptjs"
     const salt = await bcyrypt.genSalt(10)
     const hashedPassword = await bcyrypt.hash(password, salt)
@@ -73,7 +70,7 @@ const Register =  asyncHandler(async (req,res) => {
     })
     if(user){
         res.status(201).json({
-            message: "created succesufly"
+            message: "created succesufly but first you need to verify your email"
         })
             // create MailTransporter:
     const transporter = nodemailer.createTransport({
@@ -92,26 +89,18 @@ const Register =  asyncHandler(async (req,res) => {
         from: "Verify Your Email" + process.env.EMAIL,
         to: email,
         subject: 'Verify Your Email ',
-        html: `<h2>Hi Please Verify Your Email <a href="http://localhost:3000/api/auth/register/verify/${token}">here</a></h2>`
-        
+        html: `<h2>Hi Please Verify Your Email <a href="http://localhost:3000/api/auth/register/verify/${token}">here</a></h2>`   
     }
     // send mail:
     transporter.sendMail(mailContent, (err) => !err ? console.log('mail just sent to '+user.email) : console.log(err))
-
-    
-
     }
+    // other Scénarion when the user cant register 
     else
     {
         res.status(400)
         res.json({message: "Invalid User Data"})
     }
-
-
 })
-
-
-
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/getUser
 // *** acces : private ***
@@ -124,8 +113,6 @@ const Getme = asyncHandler(async (req,res) => {
         email,
     })
 })
-
-
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/ForgetPassword
 // *** acces : public ***
@@ -136,8 +123,6 @@ const ForgetPassword =  (req,res) => {
         res.send(error)
     }   
 }
-
-
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/ResetPassword
 // *** acces : public ***
@@ -149,10 +134,6 @@ const ResetPassword =  (req,res) => {
     }
     // token = req.params.id
 }
-
-
-
-
 
 
 module.exports = { Login, Register, ForgetPassword, ResetPassword , Getme }

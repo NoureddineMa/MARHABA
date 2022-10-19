@@ -9,14 +9,19 @@ const { Login , Register , ForgetPassword , ResetPassword  } = require('../contr
 
 router.post('/login',Login)
 router.post('/register',Register)
-router.post('/forgetpassword',ForgetPassword)
+router.post('/forgetpassword/:token',ForgetPassword)
 // => :token to reset password (just for test Route)
 router.post('/resetpassword',ResetPassword) 
+
+
+
 router.get('/getme', verify , async (req,res) => {
     const id = req.user._id
     const user = await User.findById({_id: id})
     res.send(`Hello ${user.name} u have acces to this link`)
 })
+
+
 
 router.get('/register/verify/:token' , (req,res) => {
     // retrieve token from params
@@ -29,9 +34,11 @@ router.get('/register/verify/:token' , (req,res) => {
         .then(() => {
             res.send('email verified succefully') && console.log('email verified succefully')
         }).catch((err)=> {
-        res.json({message:"something went wrong"})
+        res.json({message:"something went wrong " + err})
     })
 })
+
+
 
 
 module.exports = { router }
