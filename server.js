@@ -2,15 +2,24 @@ const express = require('express');
 const dotenv = require('dotenv').config()
 const PORT = process.env.PORT || 4000;
 const { router  } = require('./routes/authRoutes')
+const  ClientRouter  = require('./routes/ClientRouter')
+const  livreurRouter = require('./routes/LivreurRouter')
+const  managerRouter = require('./routes/ManagerRouter')
 
 const app = express();
-
+app.use(express.urlencoded ({extended: false}))
 app.use(express.json())
 
-
+// authentification route:
 app.use('/api/auth', router)
+// client route : 
+app.use('/api/user', ClientRouter)
+// Livreur route:
+app.use('/api/user', livreurRouter)
+// Manager route: 
+app.use('/api/user', managerRouter)
 
-app.use(express.urlencoded ({extended: false}))
+
 
 
 app.listen(PORT, () => {

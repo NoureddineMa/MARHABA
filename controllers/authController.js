@@ -4,7 +4,6 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/authModel'); 
 const Roles = require('../models/rolesModel')
 const nodemailer = require('nodemailer');
-const { findOne } = require('../models/rolesModel');
 
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/login
@@ -29,7 +28,7 @@ const Login = asyncHandler(async (req,res) => {
         res.send(`Hello ${user.name} u are ${nameRole}`)  
      } else {
         res.status(400)
-        throw new Error('Invalid credentials')
+        res.json({message: "Invalid credentials"})
      }
     }
     else {
@@ -92,7 +91,7 @@ const Register =  asyncHandler(async (req,res) => {
         html: `<h2>Hi Please Verify Your Email <a href="http://localhost:3000/api/auth/register/verify/${token}">here</a></h2>`   
     }
     // send mail:
-    transporter.sendMail(mailContent, (err) => !err ? console.log('mail just sent to '+user.email) : console.log(err))
+    transporter.sendMail(mailContent, (err) => !err )
     }
     // other Scénarion when the user cant register 
     else
@@ -101,24 +100,13 @@ const Register =  asyncHandler(async (req,res) => {
         res.json({message: "Invalid User Data"})
     }
 })
-// *** *** *** method :post *** *** ***
-// @Route :api/auth/getUser
-// *** acces : private ***
-const Getme = asyncHandler(async (req,res) => {
-    const{_id, name, email} = await User.findById(req.user.id)
 
-    res.status(200).json({
-        id: _id,
-        name,
-        email,
-    })
-})
+
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/ForgetPassword
 // *** acces : public ***
 const ForgetPassword =   asyncHandler(async (req,res) => {
             const Useremail = req.body.email
-            console.log(Useremail);
             const retrieveEmail = await User.findOne({email: Useremail})
             if(retrieveEmail){
             const transporter = nodemailer.createTransport({
@@ -131,7 +119,7 @@ const ForgetPassword =   asyncHandler(async (req,res) => {
                     rejectUnauthorized: false
                 } 
             })
-            const token = jwt.sign({_id: retrieveEmail._id}, process.env.JWT_SECRET, { expiresIn: '2h' }) 
+            const token = jwt.sign({_id: retrieveEmail._id}, process.env.JWT_SECRET, { expiresIn: '10m' }) 
             // create MailBody
             const mailContent = {
                 from: "Reset Password " + process.env.EMAIL,
@@ -162,8 +150,9 @@ const ResetPassword = async (req,res) => {
      const salt = await bcyrypt.genSalt(10)
      const hashedPassword = await bcyrypt.hash(newPassword, salt)
 
+     
     User.updateOne({_id: Userid}, { $set : {password : hashedPassword}}).then (() => {
-        res.json({message: "Password Changed Succesfully !"}) && console.log("Password Changed Succesfully !")
+        res.json({message: "Password Changed Succesfully !"})
     }).catch((err) => {
         res.json({message:"something went wrong " + err})
     })
@@ -181,11 +170,11 @@ const emailVerification = (req,res) => {
         const userId = userData._id
         User.updateOne({_id: userId}, { $set: { isValidate: true } })
             .then(() => {
-                res.send('email verified succefully') && console.log('email verified succefully')
+                res.send('email verified succefully')
             }).catch((err)=> {
             res.json({message:"something went wrong " + err})
         })
     }
 
 
-module.exports = { Login, Register, ForgetPassword, ResetPassword , Getme , emailVerification}
+module.exports = { Login, Register, ForgetPassword, ResetPassword  , emailVerification }
