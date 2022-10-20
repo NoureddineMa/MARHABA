@@ -136,12 +136,12 @@ const ForgetPassword =   asyncHandler(async (req,res) => {
             const mailContent = {
                 from: "Reset Password " + process.env.EMAIL,
                 to: Useremail,
-                subject: 'Verify Your Email ',
+                subject: 'Reset password ',
                 html: `<h2>To reset you password please click here <a href="http://localhost:3000/api/auth/resetpassword/${token}">here</a></h2>`
             }
             // send mail:
             transporter.sendMail(mailContent, (err) => !err ? console.log('mail just sent to '+Useremail) : console.log(err))
-            res.json({message: `email verification sent to ${Useremail}`})
+            res.json({message: `email to reset password sent to ${Useremail}`})
         } else {
             res.json({message: "Email not found or incorrect"})
         }
@@ -150,8 +150,23 @@ const ForgetPassword =   asyncHandler(async (req,res) => {
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/ResetPassword
 // *** acces : public ***
-const ResetPassword =  (req,res) => {
+const ResetPassword = async (req,res) => {
+    // get token from req
+    const token = req.params.token
+    const userInfos = jwt.verify(token, process.env.JWT_SECRET)
+    // get id:
+    const  Userid = userInfos._id
+    // get pw from req:
+    const newPassword = req.body.password
+     // hadsh Password : "Bcryptjs"
+     const salt = await bcyrypt.genSalt(10)
+     const hashedPassword = await bcyrypt.hash(newPassword, salt)
 
+    User.updateOne({_id: Userid}, { $set : {password : hashedPassword}}).then (() => {
+        res.json({message: "Password Changed Succesfully !"}) && console.log("Password Changed Succesfully !")
+    }).catch((err) => {
+        res.json({message:"something went wrong " + err})
+    })
 }
 
 // *** *** *** method :post *** *** ***

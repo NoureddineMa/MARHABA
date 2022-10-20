@@ -12,7 +12,7 @@ router.post('/register',Register)
 router.post('/forgetpassword',ForgetPassword)
 
 // => :token to reset password (just for test Route)
-router.get('/resetpassword/:token',ResetPassword)
+router.post('/resetpassword/:token',ResetPassword)
 
 
 
