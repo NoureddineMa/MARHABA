@@ -9,9 +9,11 @@ const { Login , Register , ForgetPassword , ResetPassword , emailVerification  }
 
 router.post('/login',Login)
 router.post('/register',Register)
-router.post('/forgetpassword/:token',ForgetPassword)
+router.post('/forgetpassword',ForgetPassword)
+
 // => :token to reset password (just for test Route)
-router.post('/resetpassword',ResetPassword) 
+router.get('/resetpassword/:token',ResetPassword)
+
 
 
 router.get('/getme', verify , async (req,res) => {
@@ -19,7 +21,6 @@ router.get('/getme', verify , async (req,res) => {
     const user = await User.findById({_id: id})
     res.send(`Hello ${user.name} u have acces to this link`)
 })
-
 
 // verify Email:
 router.get('/register/verify/:token' , emailVerification)

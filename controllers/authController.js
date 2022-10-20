@@ -3,7 +3,8 @@ const bcyrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/authModel'); 
 const Roles = require('../models/rolesModel')
-const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer');
+const { findOne } = require('../models/rolesModel');
 
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/login
@@ -33,7 +34,6 @@ const Login = asyncHandler(async (req,res) => {
     }
     else {
         res.json({message: 'U need to verify your email to login !! '});
-
     }
 }
 });
@@ -83,7 +83,7 @@ const Register =  asyncHandler(async (req,res) => {
             rejectUnauthorized: false
         } 
     })
-    const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, { expiresIn: '1h' }) 
+    const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, { expiresIn: '2h' }) 
     // create MailBody
     const mailContent = {
         from: "Verify Your Email" + process.env.EMAIL,
@@ -116,26 +116,43 @@ const Getme = asyncHandler(async (req,res) => {
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/ForgetPassword
 // *** acces : public ***
-const ForgetPassword =  (req,res) => {
-    try {
-        res.status(200).send('this a Forget Password function')
-    } catch (error) {
-        res.send(error)
-    }   
-}
+const ForgetPassword =   asyncHandler(async (req,res) => {
+            const Useremail = req.body.email
+            console.log(Useremail);
+            const retrieveEmail = await User.findOne({email: Useremail})
+            if(retrieveEmail){
+            const transporter = nodemailer.createTransport({
+                service: process.env.SMTP,
+                auth: {
+                    user: process.env.EMAIL, 
+                    pass: process.env.PWD_EMAIL
+                }, 
+                tls: {
+                    rejectUnauthorized: false
+                } 
+            })
+            const token = jwt.sign({_id: retrieveEmail._id}, process.env.JWT_SECRET, { expiresIn: '2h' }) 
+            // create MailBody
+            const mailContent = {
+                from: "Reset Password " + process.env.EMAIL,
+                to: Useremail,
+                subject: 'Verify Your Email ',
+                html: `<h2>To reset you password please click here <a href="http://localhost:3000/api/auth/resetpassword/${token}">here</a></h2>`
+            }
+            // send mail:
+            transporter.sendMail(mailContent, (err) => !err ? console.log('mail just sent to '+Useremail) : console.log(err))
+            res.json({message: `email verification sent to ${Useremail}`})
+        } else {
+            res.json({message: "Email not found or incorrect"})
+        }
+        })
+        
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/ResetPassword
 // *** acces : public ***
 const ResetPassword =  (req,res) => {
-    try {
-        res.status(200).send('this a reset Password function of')
-    } catch (error) {
-        res.send(error)
-    }
-    // token = req.params.id
+
 }
-
-
 
 // *** *** *** method :post *** *** ***
 // @Route :/register/verify/:token
