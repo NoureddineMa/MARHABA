@@ -1,11 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../models/authModel')
-const verify = require('../middlewares/verifyToken')
-const jwt = require('jsonwebtoken')
+const verifyToken = require('../middlewares/verifyToken')
+
 
 const  Livreur   = require('../middlewares/MiddlewareLivreur')
 
-router.post('/livreur' , Livreur);
+router.post('/livreur/me' ,verifyToken,Livreur);
 
-module.exports = router
+module.exports = router;

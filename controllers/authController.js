@@ -12,7 +12,6 @@ const Login = asyncHandler(async (req,res) => {
      const {email,password} = req.body
      // check for user email :
      const user = await User.findOne({email})
-     console.log(user.isValidate);
      const StatutUser = user.isValidate
      if(user){ 
         if(StatutUser == true ){
@@ -25,7 +24,7 @@ const Login = asyncHandler(async (req,res) => {
                 expiresIn: '24h' // expires in 24 hours
         });
         res.cookie('token', token, { expire: new Date() + 8062000 })
-        res.send(`Hello ${user.name} u are ${nameRole}`)  
+        res.json({message: `Hello ${user.name} Welcome to your space ${nameRole}`}) 
      } else {
         res.status(400)
         res.json({message: "Invalid credentials"})
