@@ -16,8 +16,8 @@ const Login = asyncHandler(async (req,res) => {
      if(user){ 
         if(StatutUser == true ){
      userRole = user.role
-     const findRoleByName = await Roles.findById({_id:userRole})
-     const  nameRole = findRoleByName.role
+     const findRoleById = await Roles.findById({_id:userRole})
+     const  nameRole = findRoleById.role
      if(user && (await bcyrypt.compare(password, user.password))){
         // create token: 
         const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, {

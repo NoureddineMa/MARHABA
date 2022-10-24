@@ -13,8 +13,10 @@ module.exports = async  (req,res,next) =>  {
     const UserRole = await role.findById({_id:idRole})
     const roleName = UserRole.role
     if(roleName == "client"){
+        res.status(200)
         res.json({message: `Hello ${user.name} ur role is ${roleName}`})
         } else {
+        res.status(403)
         res.json({message: "Acces Denied"})
         }
         next();
