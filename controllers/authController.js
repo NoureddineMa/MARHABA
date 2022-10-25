@@ -23,18 +23,22 @@ const Login = asyncHandler(async (req,res) => {
         const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, {
                 expiresIn: '24h' // expires in 24 hours
         });
+        res.status(200);
         res.cookie('token', token, { expire: new Date() + 8062000 })
         res.json({message: `Hello ${user.name} Welcome to your space ${nameRole}`}) 
      } else {
-        res.status(400)
+        res.status(400);
         res.json({message: "Invalid credentials"})
      }
     }
     else {
+        res.status(400);
         res.json({message: 'U need to verify your email to login !! '});
     }
 }
 });
+
+
 // *** *** *** method :post *** *** ***
 // @Route :api/auth/Register
 // *** acces : public ***
@@ -67,7 +71,7 @@ const Register =  asyncHandler(async (req,res) => {
         role:nameRole
     })
     if(user){
-        res.status(201).json({
+        res.status(200).json({
             message: "created succesufly but first you need to verify your email"
         })
             // create MailTransporter:
