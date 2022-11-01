@@ -29,7 +29,6 @@ const Login = asyncHandler(async (req, res) => {
                     expiresIn: '24h' // expires in 24 hours
                 });
                 res.status(200)
-                .cookie('token', token, { expire: new Date() + 8062000 })
                 .send(token)
                 
             } else {
