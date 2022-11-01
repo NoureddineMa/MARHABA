@@ -30,7 +30,6 @@ const Login = asyncHandler(async (req, res) => {
                 });
                 res.status(200)
                 .send(token)
-                
             } else {
                 res.status(400)
                 .json({ message: "Invalid credentials" })
@@ -134,13 +133,13 @@ const ForgetPassword = asyncHandler(async (req, res) => {
             from: "Reset Password " + process.env.EMAIL,
             to: Useremail,
             subject: 'Reset password ',
-            html: `<h2>To reset you password please click here <a href="http://localhost:3000/api/auth/resetpassword/${token}">here</a></h2>`
+            html: `<h2>To reset you password please click here <a href="http://localhost:3000/resetpassword/${token}">here</a></h2>`
         }
         // send mail:
         transporter.sendMail(mailContent, (err) => !err ? console.log('mail just sent to ' + Useremail) : console.log(err))
-        res.json({ message: `email to reset password sent to ${Useremail}` })
+        res.json({ message: `email  sent to ${Useremail} go and verify it to reset your password` })
     } else {
-        res.json({ message: "Email not found or incorrect" })
+        res.json({ message: "Email wrong or  not found !!" })
     }
 })
 
