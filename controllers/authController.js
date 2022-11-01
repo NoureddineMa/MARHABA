@@ -30,7 +30,8 @@ const Login = asyncHandler(async (req, res) => {
                 });
                 res.status(200)
                 .cookie('token', token, { expire: new Date() + 8062000 })
-                .json({ message: `Hello ${user.name} Welcome to your space ${nameRole}` })
+                .send(token)
+                
             } else {
                 res.status(400)
                 .json({ message: "Invalid credentials" })
@@ -41,7 +42,7 @@ const Login = asyncHandler(async (req, res) => {
             .json({ message: 'U need to verify your email to login !! ' });
         }
     } else {
-        res.status(400).json({message: 'User Not Found !!'})
+        res.status(400).json({message: 'User Not Found !!'}, )
     }
 });
 
