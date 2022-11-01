@@ -144,7 +144,7 @@ const ForgetPassword = asyncHandler(async (req, res) => {
 })
 
 // *** *** *** method :post *** *** ***
-// @Route :api/auth/ResetPassword
+// @Route :api/auth/ResetPassword/:token
 // *** acces : public ***
 const ResetPassword = async (req, res) => {
     // get token from req
