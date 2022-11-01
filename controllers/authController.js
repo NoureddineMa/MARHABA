@@ -154,16 +154,14 @@ const ResetPassword = async (req, res) => {
     const Userid = userInfos._id
     // get pw from req:
     const newPassword = req.body.password
+
     // hadsh Password : "Bcryptjs"
     const salt = await bcyrypt.genSalt(10)
     const hashedPassword = await bcyrypt.hash(newPassword, salt)
-
-
     User.updateOne({ _id: Userid }, { $set: { password: hashedPassword } }).then(() => {
         res.json({ message: "Password Changed Succesfully !" })
-    }).catch((err) => {
-        res.json({ message: "something went wrong " + err })
     })
+    
 }
 
 // *** *** *** method :post *** *** ***
