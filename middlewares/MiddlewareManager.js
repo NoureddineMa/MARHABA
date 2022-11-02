@@ -3,7 +3,6 @@ const User = require('../models/authModel');
 const role = require('../models/rolesModel');
 
 
-
 module.exports = async  (req,res,next) =>  {
     token = req.header('auth-token')
 
@@ -17,11 +16,10 @@ module.exports = async  (req,res,next) =>  {
     const UserRole = await role.findById({_id:idRole})
     const roleName = UserRole.role
     if(roleName == "manager"){
-        res.status(200)
-        res.json({message: `Hello ${user.name} ur role is ${roleName}`})
+        res.status(200).json({message: `Hello ${user.name} ur role is ${roleName}`})
     }}
     else {
-        res.json({message : "TOKEN INVALID ! "})
+        res.json({message : "TOKEN INVALID ! "}).status(400)
     }
 } 
 

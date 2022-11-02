@@ -25,6 +25,5 @@ app.use('/api/user', managerRouter)
 app.listen(PORT, () => {
     console.log(`server Started at port ${PORT}`);
 })
-
 // connect base données:
 require('./config/dbConfig').connect();

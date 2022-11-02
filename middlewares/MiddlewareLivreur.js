@@ -19,6 +19,6 @@ module.exports = async  (req,res,next) =>  {
         res.json({message: `Hello ${user.name} ur role is ${roleName}`})   
         }}
         else {
-            res.json({message : "TOKEN INVALID ! "})
+            res.json({message : "TOKEN INVALID ! "}).status(400)
         }
     } 

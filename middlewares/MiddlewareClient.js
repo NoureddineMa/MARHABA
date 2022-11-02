@@ -17,9 +17,9 @@ module.exports = async  (req,res,next) =>  {
     const UserRole = await role.findById({_id:idRole})
     const roleName = UserRole.role
     if(roleName == "client"){
-        res.json({message: `Hello ${user.name} ur role is ${roleName}`})
+        res.json({message: `Hello ${user.name} ur role is ${roleName}`}).status(400)
     }}
     else {
-        res.json({message : "TOKEN INVALID ! "})
+        res.json({message : "TOKEN INVALID ! "}).status(400)
     }
 }
