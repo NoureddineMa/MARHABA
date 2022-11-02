@@ -11,10 +11,6 @@ const nodemailer = require('nodemailer');
 const Login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
-    // check Inputs if fields : 
-    if (!email || !password) {
-        res.json({ message: "please add all fields" }).status(400)
-    }
     // check for user email :
     const user = await User.findOne({ email })
     if (user) {
