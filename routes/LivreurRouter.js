@@ -5,6 +5,6 @@ const verifyToken = require('../middlewares/verifyToken')
 
 const  Livreur   = require('../middlewares/MiddlewareLivreur')
 
-router.post('/livreur/me' ,Livreur);
+router.get('/livreur/me/', verifyToken ,Livreur);
 
-module.exports = router;
+module.exports = router

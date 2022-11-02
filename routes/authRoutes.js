@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../models/authModel')
-const verify = require('../middlewares/verifyToken')
-const jwt = require('jsonwebtoken')
+
 
 const { Login , Register , ForgetPassword , ResetPassword , emailVerification  } = require('../controllers/authcontroller')
 
@@ -14,11 +12,6 @@ router.post('/forgetpassword',ForgetPassword)
 router.post('/resetpassword/:token',ResetPassword)
 
 
-router.get('/getme', verify , async (req,res) => {
-    const id = req.user._id
-    const user = await User.findById({_id: id})
-    res.send(`Hello ${user.name} u have acces to this link`)
-})
 
 // verify Email:
 router.get('/register/verify/:token' , emailVerification)

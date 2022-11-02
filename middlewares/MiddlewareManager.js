@@ -17,10 +17,10 @@ module.exports = async  (req,res,next) =>  {
     const roleName = UserRole.role
     if(roleName == "manager"){
         res.status(200).json({message: `Hello ${user.name} ur role is ${roleName}`})
-    }}
-    else {
-        res.json({message : "TOKEN INVALID ! "}).status(400)
-    }
+    } else {
+        res.status(400).json({message: "ACCES DENIED !!"})
+    } 
+}
 } 
 
 

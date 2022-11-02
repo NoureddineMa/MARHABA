@@ -7,6 +7,6 @@ const verifyToken = require('../middlewares/verifyToken')
 const  Manager  = require('../middlewares/MiddlewareManager');
 
 
-router.post('/manager/me',verifyToken,Manager)
+router.get('/manager/me/',verifyToken,Manager)
 
 module.exports = router

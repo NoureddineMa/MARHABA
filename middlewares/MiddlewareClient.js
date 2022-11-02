@@ -3,11 +3,9 @@ const User = require('../models/authModel');
 const role = require('../models/rolesModel');
 
 module.exports = async  (req,res,next) =>  {
-    token = req.header('auth-token')
+    token = req.header('Authorization').split(' ')[1]
 
     if(token){
-
-   
     const userInfos = jwt.verify(token, process.env.JWT_SECRET)
     const userId = userInfos._id
     // after retrive id we need to check role if is client : 
@@ -18,8 +16,7 @@ module.exports = async  (req,res,next) =>  {
     const roleName = UserRole.role
     if(roleName == "client"){
         res.json({message: `Hello ${user.name} ur role is ${roleName}`}).status(400)
-    }}
-    else {
-        res.json({message : "TOKEN INVALID ! "}).status(400)
-    }
+    } else {
+        res.status(400).json({message: "ACCES DENIED !!"})
 }
+}}
