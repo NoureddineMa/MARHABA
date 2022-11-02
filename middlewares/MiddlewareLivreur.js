@@ -4,7 +4,7 @@ const role = require('../models/rolesModel');
 
 module.exports = async  (req,res,next) =>  {
 
-    token = req.header('auth-token')
+    token =  req.header('Authorization').split(' ')[1]
 
     if(token) {
     const userInfos = jwt.verify(token, process.env.JWT_SECRET)
