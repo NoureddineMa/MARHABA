@@ -25,18 +25,18 @@ const Login = asyncHandler(async (req, res) => {
                     expiresIn: '24h' // expires in 24 hours
                 });
                 res.status(200)
-                .json({token,nameRole})
+                    .json({ token, nameRole })
             } else {
                 res.status(400)
-                .json({ message: "Invalid credentials" })
+                    .json({ message: "Invalid credentials" })
             }
         }
         else {
             res.status(400)
-            .json({ message: 'U need to verify your email to login !! ' });
+                .json({ message: 'U need to verify your email to login !! ' });
         }
     } else {
-        res.status(400).json({message: 'User Not Found !!'}, )
+        res.status(400).json({ message: 'User Not Found !!' },)
     }
 });
 
@@ -46,7 +46,7 @@ const Login = asyncHandler(async (req, res) => {
 // *** acces : public ***
 const Register = asyncHandler(async (req, res) => {
     const { name, email, password, phone, adresse, role } = req.body
-
+// joi  hard coding ; 
     if (!name || !email || !password || !phone || !adresse || !role) {
         res.status(400)
             .json({ message: "Please add all fields" })
@@ -97,9 +97,9 @@ const Register = asyncHandler(async (req, res) => {
         }
         // send mail:
         transporter.sendMail(mailContent, (err) => !err)
-    }   
+    }
     // other Scénarion when the user cant register 
-    else { 
+    else {
         res.status(400)
         res.json({ message: "Invalid User Data" })
     }
@@ -157,7 +157,7 @@ const ResetPassword = async (req, res) => {
     User.updateOne({ _id: Userid }, { $set: { password: hashedPassword } }).then(() => {
         res.json({ message: "Password Changed Succesfully !" })
     })
-    
+
 }
 
 // *** *** *** method :post *** *** ***
@@ -165,20 +165,20 @@ const ResetPassword = async (req, res) => {
 // *** acces : private ***
 const emailVerification = (req, res) => {
     // retrieve token from params
-    const token = req.params.token 
+    const token = req.params.token
     console.log(token)
     // check if token exist 
     // verify token:
     const userData = jwt.verify(token, process.env.JWT_SECRET)
-    if(!userData) return res.status(500).json({
-        success : false,
+    if (!userData) return res.status(500).json({
+        success: false,
         message: 'no token',
     })
     // get id
     const userId = userData._id
     User.updateOne({ _id: userId }, { $set: { isValidate: true } })
         .then(() => {
-            res.json({message: 'email verified succefully'})
+            res.json({ message: 'email verified succefully' })
         }).catch((err) => {
             res.json({ message: "something went wrong " + err })
         })
@@ -186,3 +186,4 @@ const emailVerification = (req, res) => {
 
 
 module.exports = { Login, Register, ForgetPassword, ResetPassword, emailVerification }
+

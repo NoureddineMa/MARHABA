@@ -16,7 +16,7 @@ module.exports = async  (req,res,next) =>  {
     const UserRole = await role.findById({_id:idRole})
     const roleName = UserRole.role
     if(roleName == "client"){
-        res.json({message:`hello ${nameUser} welcome to your space ${roleName}`, nameUser , roleName}).status(200)
+        res.json({message:`hello ${nameUser} welcome to your space ${roleName}` ,user , roleName}).status(200)
     } else {
         res.status(400).json({message: "ACCES DENIED !!"})
 }
