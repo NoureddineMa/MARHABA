@@ -25,7 +25,7 @@ const Login = asyncHandler(async (req, res) => {
                     expiresIn: '24h' // expires in 24 hours
                 });
                 res.status(200)
-                    .json({ token, nameRole })
+                    .json({ token, nameRole , user })
             } else {
                 res.status(400)
                     .json({ message: "Invalid credentials" })
