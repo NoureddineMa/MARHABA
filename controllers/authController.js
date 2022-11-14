@@ -46,7 +46,6 @@ const Login = asyncHandler(async (req, res) => {
 // *** acces : public ***
 const Register = asyncHandler(async (req, res) => {
     const { name, email, password, phone, adresse, role } = req.body
-// joi  hard coding ; 
     if (!name || !email || !password || !phone || !adresse || !role) {
         res.status(400)
             .json({ message: "Please add all fields" })
