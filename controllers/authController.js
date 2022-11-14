@@ -150,15 +150,19 @@ const ResetPassword = async (req, res) => {
     // get pw from req:
     const newPassword = req.body.password
 
-    // hadsh Password : "Bcryptjs"
+    if(newPassword === ""){
+        res.json({message: "Password Required "})
+    } 
+    else {
+          // hadsh Password : "Bcryptjs"
     const salt = await bcyrypt.genSalt(10)
     const hashedPassword = await bcyrypt.hash(newPassword, salt)
+
     User.updateOne({ _id: Userid }, { $set: { password: hashedPassword } }).then(() => {
-        res.json({ message: "Password Changed Succesfully !" })
-    })
-
+            res.json({ message: "Password Changed Succesfully !" })
+        })
+    }
 }
-
 // *** *** *** method :post *** *** ***
 // @Route :/register/verify/:token
 // *** acces : private ***
